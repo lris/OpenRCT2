@@ -581,16 +581,17 @@ void RideObject::ReadJson(IReadObjectContext * context, const json_t * root)
     if (is_csg_loaded())
     {
         auto g1 = *(gfx_get_g1_element(SPR_CSG_RIDE_PREVIEW_TOILETS));
-        auto g12 = *(gfx_get_g1_element(SPR_CSG_RIDE_PREVIEW_TOILETS + 1));
+        //auto g12 = *(gfx_get_g1_element(SPR_CSG_RIDE_PREVIEW_TOILETS + 1));
         g1.x_offset = 0;
         g1.y_offset = 0;
 
         for (size_t i = 0; i < MAX_RIDE_TYPES_PER_RIDE_ENTRY; i++)
         {
-            imageTable->AddImage(&g1, (size_t)(g12.offset - g1.offset));
+            imageTable->AddImage(&g1, 0x4000); //(size_t)(g12.offset - g1.offset));
         }
 
         rct_ride_entry_vehicle * vehicle0 = &_legacyType.vehicles[0];
+        vehicle0->flags |= VEHICLE_SPRITE_FLAG_FLAT;
         vehicle0->base_image_id = SPR_CSG_TOILETS_BEGIN;
     }
 }
