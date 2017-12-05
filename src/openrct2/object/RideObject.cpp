@@ -328,17 +328,17 @@ void RideObject::DrawPreview(rct_drawpixelinfo * dpi, sint32 width, sint32 heigh
     gfx_draw_sprite(dpi, imageId, 0, 0, 0);
 }
 
-const utf8 * RideObject::GetDescription() const
+std::string RideObject::GetDescription() const
 {
     return GetString(OBJ_STRING_ID_DESCRIPTION);
 }
 
-const utf8 * RideObject::GetCapacity() const
+std::string RideObject::GetCapacity() const
 {
     return GetString(OBJ_STRING_ID_CAPACITY);
 }
 
-const utf8 * RideObject::GetVehicleName() const
+std::string RideObject::GetVehicleName() const
 {
     return GetString(OBJ_STRING_ID_VEHICLE_NAME);
 }
@@ -567,12 +567,12 @@ void RideObject::ReadJson(IReadObjectContext * context, const json_t * root)
     auto enDescription = json_object_get(jsonDescription, "en-GB");
 
     stringTable->SetString(0, 0, "RCT1 toilets");
-    stringTable->SetString(1, 0, String::Duplicate(json_string_value(enDescription)));
+    stringTable->SetString(1, 0, json_string_value(enDescription));
     stringTable->SetString(2, 0, "Capacity");
     stringTable->SetString(3, 0, "Vehicle");
 
     auto imageTable = GetImageTable();
-    
+
     if (is_csg_loaded())
     {
         auto g1 = *(gfx_get_g1_element(0x60000 + 64231));
