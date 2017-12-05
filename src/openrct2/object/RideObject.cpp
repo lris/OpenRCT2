@@ -560,7 +560,7 @@ void RideObject::ReadJson(IReadObjectContext * context, const json_t * root)
 {
     printf("RideObject::ReadJson(context, root)\n");
     const char * rideType = json_string_value(json_object_get(json_object_get(root, "properties"), "type"));
-    const char * category = json_string_value(json_object_get(json_object_get(root, "properties"), "category"));
+    // const char * category = json_string_value(json_object_get(json_object_get(root, "properties"), "category"));
     sint32 previewImg = 0;
     sint32 imageStart = 0;
 
