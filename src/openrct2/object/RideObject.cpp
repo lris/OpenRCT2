@@ -21,11 +21,13 @@
 #include "../core/String.hpp"
 #include "../drawing/drawing.h"
 #include "../localisation/language.h"
+#include "../localisation/LanguagePack.h"
 #include "../rct2.h"
 #include "../ride/ride.h"
 #include "../ride/RideGroupManager.h"
 #include "../ride/Track.h"
 #include "../OpenRCT2.h"
+#include "Object.h"
 #include "ObjectJsonHelpers.h"
 #include "ObjectRepository.h"
 #include "RideObject.h"
@@ -712,6 +714,59 @@ static uint8 ParseShopItem(const std::string &s)
         SHOP_ITEM_NONE;
 }
 
+const char  RCT2toISO[14][6] =
+{
+    { "en-GB" },
+    { "en-US" },
+    { "fr-FR" },
+    { "de-DE" },
+    { "es-ES" },
+    { "it-IT" },
+    { "nl-NL" },
+    { "sv-SE" },
+    { "ja-JP" },
+    { "ko-KR" },
+    { "zh-CN" },
+    { "zh-TW" },
+    { ""      },
+    { "pr-BR" },
+};
+
+// Fills the translation table.
+// TODO: support more than the languages that RCT2 supported.
+void RideObject::UpdateLocalisation(const json_t * root)
+{
+    auto stringTable = GetStringTable();
+
+    auto jsonStrings = json_object_get(root, "strings");
+    auto jsonName = json_object_get(jsonStrings, "name");
+    auto jsonDescription = json_object_get(jsonStrings, "description");
+
+    for (size_t i = 0; i < 14; i++)
+    {
+        if (i == 12)
+            continue;
+
+        const char * isoCode = RCT2toISO[i];
+
+        if (json_object_get(jsonName, isoCode) != nullptr)
+            stringTable->SetString(OBJ_STRING_ID_NAME,         i, json_string_value(json_object_get(jsonName, isoCode)));
+
+        if (json_object_get(jsonDescription, isoCode) != nullptr)
+            stringTable->SetString(OBJ_STRING_ID_DESCRIPTION,  i, json_string_value(json_object_get(jsonDescription, isoCode)));
+
+    }
+
+//    stringTable->SetString(OBJ_STRING_ID_NAME,         RCT2_LANGUAGE_ID_ENGLISH_UK, json_string_value(json_object_get(jsonName, "en-GB")));
+//    stringTable->SetString(OBJ_STRING_ID_DESCRIPTION,  RCT2_LANGUAGE_ID_ENGLISH_UK, json_string_value(json_object_get(jsonDescription, "en-GB")));
+      stringTable->SetString(OBJ_STRING_ID_CAPACITY,     RCT2_LANGUAGE_ID_ENGLISH_UK, "Capacity");
+      stringTable->SetString(OBJ_STRING_ID_VEHICLE_NAME, RCT2_LANGUAGE_ID_ENGLISH_UK, "Vehicle");
+//
+//    stringTable->SetString(OBJ_STRING_ID_NAME,         RCT2_LANGUAGE_ID_DUTCH, json_string_value(json_object_get(jsonName, "nl-NL")));
+//    stringTable->SetString(OBJ_STRING_ID_DESCRIPTION,  RCT2_LANGUAGE_ID_DUTCH, json_string_value(json_object_get(jsonDescription, "nl-NL")));
+
+}
+
 void RideObject::ReadJson(IReadObjectContext * context, const json_t * root)
 {
     auto rideTypes = ObjectJsonHelpers::GetJsonStringArray(json_object_get(json_object_get(root, "properties"), "type"));
@@ -726,6 +781,8 @@ void RideObject::ReadJson(IReadObjectContext * context, const json_t * root)
         _legacyType.category[0] = ParseRideCategory(rideCategories[i]);
     }
 
+    UpdateLocalisation(root);
+
     // Shop item
     auto rideSells = ObjectJsonHelpers::GetJsonStringArray(json_object_get(json_object_get(root, "properties"), "sells"));
     _legacyType.shop_item = SHOP_ITEM_NONE;
@@ -738,16 +795,6 @@ void RideObject::ReadJson(IReadObjectContext * context, const json_t * root)
     {
         _legacyType.shop_item_secondary = ParseShopItem(rideSells[1]);
     }
-
-    auto stringTable = GetStringTable();
-    auto jsonStrings = json_object_get(root, "strings");
-    auto jsonName = json_object_get(jsonStrings, "name");
-    auto jsonDescription = json_object_get(jsonStrings, "description");
-
-    stringTable->SetString(0, 0, json_string_value(json_object_get(jsonName, "en-GB")));
-    stringTable->SetString(1, 0, json_string_value(json_object_get(jsonDescription, "en-GB")));
-    stringTable->SetString(2, 0, "Capacity");
-    stringTable->SetString(3, 0, "Vehicle");
 
     auto imageTable = GetImageTable();
     ObjectJsonHelpers::LoadImages(root, *imageTable);
