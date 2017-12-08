@@ -244,13 +244,8 @@ static bool filter_source(const ObjectRepositoryItem * item);
 static bool filter_chunks(const ObjectRepositoryItem * item);
 static void filter_update_counts();
 
-<<<<<<< HEAD:src/openrct2-ui/windows/EditorObjectSelection.cpp
-=======
-static void reset_selected_object_count_and_size();
-static sint32 sub_6AB211();
 static std::string object_get_description(const void * object);
 
->>>>>>> 934f41aff... Use std::string for objects:src/openrct2/windows/EditorObjectSelection.cpp
 enum {
     RIDE_SORT_TYPE,
     RIDE_SORT_RIDE
@@ -1458,66 +1453,6 @@ static rct_string_id get_ride_type_string_id(const ObjectRepositoryItem * item)
     }
     return result;
 }
-<<<<<<< HEAD:src/openrct2-ui/windows/EditorObjectSelection.cpp
-=======
-
-bool editor_check_object_group_at_least_one_selected(sint32 checkObjectType)
-{
-    sint32 numObjects = (sint32)object_repository_get_items_count();
-    const ObjectRepositoryItem * items = object_repository_get_items();
-
-    for (sint32 i = 0; i < numObjects; i++) {
-        uint8 objectType = items[i].ObjectEntry.flags & 0x0F;
-        if (checkObjectType == objectType && (_objectSelectionFlags[i] & OBJECT_SELECTION_FLAG_SELECTED)) {
-            return true;
-        }
-    }
-    return false;
-}
-
-sint32 editor_remove_unused_objects()
-{
-    bool createSelectionFlags = (_objectSelectionFlags == nullptr);
-    if (createSelectionFlags && !sub_6AB211())
-    {
-        return 0;
-    }
-
-    setup_in_use_selection_flags();
-
-    sint32 numObjects = (sint32)object_repository_get_items_count();
-    const ObjectRepositoryItem * items = object_repository_get_items();
-
-    sint32 numUnselectedObjects = 0;
-    for (sint32 i = 0; i < numObjects; i++)
-    {
-        if (!(_objectSelectionFlags[i] & OBJECT_SELECTION_FLAG_IN_USE) && !(_objectSelectionFlags[i] & OBJECT_SELECTION_FLAG_ALWAYS_REQUIRED))
-        {
-            const ObjectRepositoryItem * item = &items[i];
-            uint8 objectType = item->ObjectEntry.flags & 0xF;
-
-            if (objectType == OBJECT_TYPE_PARK_ENTRANCE || objectType == OBJECT_TYPE_SCENARIO_TEXT || objectType == OBJECT_TYPE_WATER || objectType == OBJECT_TYPE_SCENERY_GROUP)
-            {
-                continue;
-            }
-
-            _numSelectedObjectsForType[objectType]--;
-            _objectSelectionFlags[i] &= ~OBJECT_SELECTION_FLAG_SELECTED;
-            numUnselectedObjects++;
-        }
-    }
-    unload_unselected_objects();
-
-    if (createSelectionFlags)
-    {
-        editor_object_flags_free();
-    }
-
-    auto intent = Intent(INTENT_ACTION_REFRESH_SCENERY);
-    context_broadcast_intent(&intent);
-
-    return numUnselectedObjects;
-}
 
 static std::string object_get_description(const void * object)
 {
@@ -1537,4 +1472,3 @@ static std::string object_get_description(const void * object)
         return "";
     }
 }
->>>>>>> 934f41aff... Use std::string for objects:src/openrct2/windows/EditorObjectSelection.cpp
