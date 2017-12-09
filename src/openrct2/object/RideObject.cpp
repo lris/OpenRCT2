@@ -742,7 +742,7 @@ void RideObject::UpdateLocalisation(const json_t * root)
     auto jsonName = json_object_get(jsonStrings, "name");
     auto jsonDescription = json_object_get(jsonStrings, "description");
 
-    for (size_t i = 0; i < 14; i++)
+    for (uint8 i = 0; i < 14; i++)
     {
         if (i == 12)
             continue;
