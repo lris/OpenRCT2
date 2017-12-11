@@ -796,10 +796,10 @@ void RideObject::ReadJson(IReadObjectContext * context, const json_t * root)
         _legacyType.shop_item_secondary = ParseShopItem(rideSells[1]);
     }
 
-    auto imageTable = GetImageTable();
-    ObjectJsonHelpers::LoadImages(root, *imageTable);
-
     rct_ride_entry_vehicle * vehicle0 = &_legacyType.vehicles[0];
     vehicle0->sprite_flags |= VEHICLE_SPRITE_FLAG_FLAT;
     vehicle0->base_image_id = 0;
+
+    ObjectJsonHelpers::LoadStrings(root, *GetStringTable());
+    ObjectJsonHelpers::LoadImages(root, *GetImageTable());
 }
