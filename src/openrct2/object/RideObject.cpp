@@ -77,9 +77,9 @@ void RideObject::ReadLegacy(IReadObjectContext * context, IStream * stream)
     _legacyType.shop_item = stream->ReadValue<uint8>();
     _legacyType.shop_item_secondary = stream->ReadValue<uint8>();
 
-    GetStringTable()->Read(context, stream, OBJ_STRING_ID_NAME);
-    GetStringTable()->Read(context, stream, OBJ_STRING_ID_DESCRIPTION);
-    GetStringTable()->Read(context, stream, OBJ_STRING_ID_CAPACITY);
+    GetStringTable().Read(context, stream, OBJ_STRING_ID_NAME);
+    GetStringTable().Read(context, stream, OBJ_STRING_ID_DESCRIPTION);
+    GetStringTable().Read(context, stream, OBJ_STRING_ID_CAPACITY);
 
     // Read preset colours, by default there are 32
     _presetColours.count = stream->ReadValue<uint8>();
@@ -109,7 +109,7 @@ void RideObject::ReadLegacy(IReadObjectContext * context, IStream * stream)
         _peepLoadingPositionsCount[i] = numPeepLoadingPositions;
     }
 
-    GetImageTable()->Read(context, stream);
+    GetImageTable().Read(context, stream);
 
     // Validate properties
     if (_legacyType.excitement_multiplier > 75)
@@ -130,12 +130,12 @@ void RideObject::ReadLegacy(IReadObjectContext * context, IStream * stream)
 
 void RideObject::Load()
 {
-    GetStringTable()->Sort();
+    GetStringTable().Sort();
     _legacyType.naming.name = language_allocate_object_string(GetName());
     _legacyType.naming.description = language_allocate_object_string(GetDescription());
     _legacyType.capacity = language_allocate_object_string(GetCapacity());
     _legacyType.vehicleName = language_allocate_object_string(GetVehicleName());
-    _legacyType.images_offset = gfx_object_allocate_images(GetImageTable()->GetImages(), GetImageTable()->GetCount());
+    _legacyType.images_offset = gfx_object_allocate_images(GetImageTable().GetImages(), GetImageTable().GetCount());
     _legacyType.vehicle_preset_list = &_presetColours;
 
     sint32 cur_vehicle_images_offset = _legacyType.images_offset + MAX_RIDE_TYPES_PER_RIDE_ENTRY;
@@ -310,7 +310,7 @@ void RideObject::Unload()
     language_free_object_string(_legacyType.naming.description);
     language_free_object_string(_legacyType.capacity);
     language_free_object_string(_legacyType.vehicleName);
-    gfx_object_free_images(_legacyType.images_offset, GetImageTable()->GetCount());
+    gfx_object_free_images(_legacyType.images_offset, GetImageTable().GetCount());
 
     _legacyType.naming.name = 0;
     _legacyType.naming.description = 0;
@@ -736,7 +736,7 @@ const char  RCT2toISO[14][6] =
 // TODO: support more than the languages that RCT2 supported.
 void RideObject::UpdateLocalisation(const json_t * root)
 {
-    auto stringTable = GetStringTable();
+    auto &stringTable = GetStringTable();
 
     auto jsonStrings = json_object_get(root, "strings");
     auto jsonName = json_object_get(jsonStrings, "name");
@@ -750,20 +750,20 @@ void RideObject::UpdateLocalisation(const json_t * root)
         const char * isoCode = RCT2toISO[i];
 
         if (json_object_get(jsonName, isoCode) != nullptr)
-            stringTable->SetString(OBJ_STRING_ID_NAME,         i, json_string_value(json_object_get(jsonName, isoCode)));
+            stringTable.SetString(OBJ_STRING_ID_NAME,         i, json_string_value(json_object_get(jsonName, isoCode)));
 
         if (json_object_get(jsonDescription, isoCode) != nullptr)
-            stringTable->SetString(OBJ_STRING_ID_DESCRIPTION,  i, json_string_value(json_object_get(jsonDescription, isoCode)));
+            stringTable.SetString(OBJ_STRING_ID_DESCRIPTION,  i, json_string_value(json_object_get(jsonDescription, isoCode)));
 
     }
 
-//    stringTable->SetString(OBJ_STRING_ID_NAME,         RCT2_LANGUAGE_ID_ENGLISH_UK, json_string_value(json_object_get(jsonName, "en-GB")));
-//    stringTable->SetString(OBJ_STRING_ID_DESCRIPTION,  RCT2_LANGUAGE_ID_ENGLISH_UK, json_string_value(json_object_get(jsonDescription, "en-GB")));
-      stringTable->SetString(OBJ_STRING_ID_CAPACITY,     RCT2_LANGUAGE_ID_ENGLISH_UK, "Capacity");
-      stringTable->SetString(OBJ_STRING_ID_VEHICLE_NAME, RCT2_LANGUAGE_ID_ENGLISH_UK, "Vehicle");
+//    stringTable.SetString(OBJ_STRING_ID_NAME,         RCT2_LANGUAGE_ID_ENGLISH_UK, json_string_value(json_object_get(jsonName, "en-GB")));
+//    stringTable.SetString(OBJ_STRING_ID_DESCRIPTION,  RCT2_LANGUAGE_ID_ENGLISH_UK, json_string_value(json_object_get(jsonDescription, "en-GB")));
+      stringTable.SetString(OBJ_STRING_ID_CAPACITY,     RCT2_LANGUAGE_ID_ENGLISH_UK, "Capacity");
+      stringTable.SetString(OBJ_STRING_ID_VEHICLE_NAME, RCT2_LANGUAGE_ID_ENGLISH_UK, "Vehicle");
 //
-//    stringTable->SetString(OBJ_STRING_ID_NAME,         RCT2_LANGUAGE_ID_DUTCH, json_string_value(json_object_get(jsonName, "nl-NL")));
-//    stringTable->SetString(OBJ_STRING_ID_DESCRIPTION,  RCT2_LANGUAGE_ID_DUTCH, json_string_value(json_object_get(jsonDescription, "nl-NL")));
+//    stringTable.SetString(OBJ_STRING_ID_NAME,         RCT2_LANGUAGE_ID_DUTCH, json_string_value(json_object_get(jsonName, "nl-NL")));
+//    stringTable.SetString(OBJ_STRING_ID_DESCRIPTION,  RCT2_LANGUAGE_ID_DUTCH, json_string_value(json_object_get(jsonDescription, "nl-NL")));
 
 }
 
@@ -800,6 +800,6 @@ void RideObject::ReadJson(IReadObjectContext * context, const json_t * root)
     vehicle0->sprite_flags |= VEHICLE_SPRITE_FLAG_FLAT;
     vehicle0->base_image_id = 0;
 
-    ObjectJsonHelpers::LoadStrings(root, *GetStringTable());
-    ObjectJsonHelpers::LoadImages(root, *GetImageTable());
+    ObjectJsonHelpers::LoadStrings(root, GetStringTable());
+    ObjectJsonHelpers::LoadImages(root, GetImageTable());
 }
