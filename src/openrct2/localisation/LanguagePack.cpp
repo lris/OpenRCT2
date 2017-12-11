@@ -39,6 +39,24 @@ constexpr sint32           ObjectOverrideMaxStringCount   = 4;
 constexpr rct_string_id ScenarioOverrideBase           = 0x7000;
 constexpr sint32           ScenarioOverrideMaxStringCount = 3;
 
+uint8 RCT2ToOpenRCT2LanguageId[] =
+{
+    LANGUAGE_ENGLISH_UK,
+    LANGUAGE_ENGLISH_US,
+    LANGUAGE_FRENCH,
+    LANGUAGE_GERMAN,
+    LANGUAGE_SPANISH,
+    LANGUAGE_ITALIAN,
+    LANGUAGE_DUTCH,
+    LANGUAGE_SWEDISH,
+    LANGUAGE_JAPANESE,
+    LANGUAGE_KOREAN,
+    LANGUAGE_CHINESE_SIMPLIFIED,
+    LANGUAGE_CHINESE_TRADITIONAL,
+    LANGUAGE_ENGLISH_UK,
+    LANGUAGE_PORTUGUESE_BR,
+};
+
 struct ObjectOverride
 {
     char        name[8] = { 0 };
